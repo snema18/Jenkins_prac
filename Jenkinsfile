@@ -17,7 +17,7 @@ git url: 'https://github.com/efsavage/hello-world-war.git'
              stage('sonar analysis'){
             steps{
        
-           sonar url :'https://13.233.89.152:9000/'
+           mvn sonar:sonar
         }
         }
         stage('Deploy the war file to tomcat container'){
