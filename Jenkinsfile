@@ -19,7 +19,7 @@ git url: 'https://github.com/efsavage/hello-world-war.git'
             steps{
        
            withSonarQubeEnv('sonar') {
-   sh  'mvn sonar:sonar'
+               sh  '/opt/sonar-scanner-3.3.0.1492-linux'
 }   
         }
         }
