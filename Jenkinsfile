@@ -16,7 +16,7 @@ git url: 'https://github.com/efsavage/hello-world-war.git'
         }
         stage('Deploy the war file to tomcat container'){
             steps{
-                deploy adapters: [tomcat9(credentialsId: '93ce2031-641d-4971-bab9-71912ee53dc6', path: '', url: 'http://13.234.59.95:8888/')], contextPath: 'piplinedemo', war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: '93ce2031-641d-4971-bab9-71912ee53dc6', path: '', url: 'https://13.233.89.152:8888/')], contextPath: 'piplinedemo', war: '**/*.war'
             }
         }
     }
