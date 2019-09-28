@@ -15,14 +15,17 @@ git url: 'https://github.com/efsavage/hello-world-war.git'
         }
         }
             
-            stage('Sonar analysis'){
-            steps{
-       
-           withSonarQubeEnv('sonar') {
-               sh  '/opt/sonar-scanner-3.3.0.1492-linux'
-}   
+           stage('Sonarqube') {
+    environment {
+        scannerHome = tool 'SonarScanner'
+    }
+    steps {
+        withSonarQubeEnv('sonar') {
+            sh "${scannerHome}/bin/sonar-scanner"
         }
-        }
+        
+    }
+}
             
           
         stage('Deploy the war file to tomcat container'){
