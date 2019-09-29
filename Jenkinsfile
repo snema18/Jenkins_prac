@@ -1,34 +1,29 @@
-node {
-   def mvnHome
-   stage('Preparation') { // for display purposes
-      // Get some code from a GitHub repository
-      git 'https://github.com/jglick/simple-maven-project-with-tests.git'
-      // Get the Maven tool.
-      // ** NOTE: This 'M3' Maven tool must be configured
-      // **       in the global configuration.           
-      mvnHome = tool 'MAVEN_HOME'
-   }
-   stage('Build') {
-      // Run the maven build
-      withEnv(["MVN_HOME=$mvnHome"]) {
-         if (isUnix()) {
-            sh '"$MVN_HOME/bin/mvn" -Dmaven.test.failure.ignore clean package'
-         } else {
-            bat(/"%MVN_HOME%\bin\mvn" -Dmaven.test.failure.ignore clean package/)
-         }
-      }
-   }
-   stage('Results') {
-      junit '**/target/surefire-reports/TEST-*.xml'
-      archiveArtifacts 'target/*.jar'
-   }
-   stage('Sonar Analysis') {
-      withEnv(["MVN_HOME=$mvnHome"]) {
-         if (isUnix()) {
-            sh '"$MVN_HOME/bin/mvn" sonar:sonar'
-         } else {
-            bat(/"%MVN_HOME%\bin\mvn" sonar:sonar/)
-         }
-      }
-   }
+pipeline{
+    agent any
+        stages{
+   
+           stage('Build'){
+               steps{
+git url: 'https://github.com/efsavage/hello-world-war.git'
+             }
+        }
+       
+        stage('Maven package'){
+            steps{
+       
+            sh '/opt/maven/bin/mvn clean package'
+        }
+        }
+            
+           stage('Sonarqube') {
+  
+    steps {
+            sh '/opt/maven/bin/mvn sonar:sonar'
+        
+    }
+}
+            
+          
+       
+    }
 }
