@@ -1,33 +1,34 @@
-pipeline{
-    agent any
-        stages{
-   
-           stage('Build'){
-               steps{
-git url: 'https://github.com/snema18/hello-world-war.git'
-             }
-        }
-       
-        stage('Maven package'){
-            steps{
-       
-            sh '/opt/maven/bin/mvn clean package'
-        }
-        }
-            
-           stage('Sonarqube') {
-  
-    steps {
-            sh '/opt/maven/bin/mvn sonar:sonar'
-        
-    }
-}
-  // ** stage('Deploy the war file to tomcat container'){
-         // **      steps{
-          // **         deploy adapters: [tomcat9(credentialsId: '9814b801-6ff0-483c-975b-6e771a3e3be4', path: '', url: 'http://18.223.171.12:8090/')], contextPath: 'Hello-world-warr', war: '**/*.war'
-       // **        }
-     // **      }         
-          
-       
-    }
+node {
+   def mvnHome
+   stage('Preparation') { // for display purposes
+      // Get some code from a GitHub repository
+      git 'https://github.com/snema18/hello-world-war.git'
+      // Get the Maven tool.
+      // ** NOTE: This 'M3' Maven tool must be configured
+      // **       in the global configuration.           
+      mvnHome = tool 'MAVEN_HOME'
+   }
+   stage('Build') {
+      // Run the maven build
+      withEnv(["MVN_HOME=$mvnHome"]) {
+         if (isUnix()) {
+            sh '"$MVN_HOME/bin/mvn" -Dmaven.test.failure.ignore clean deploy'
+         } else {
+            bat(/"%MVN_HOME%\bin\mvn" -Dmaven.test.failure.ignore clean package/)
+         }
+      }
+   }
+   stage('Results') {
+      junit '**/target/surefire-reports/TEST-*.xml'
+      archiveArtifacts 'target/*.jar'
+   }
+   stage('Sonar Analysis') {
+      withEnv(["MVN_HOME=$mvnHome"]) {
+         if (isUnix()) {
+            sh '"$MVN_HOME/bin/mvn" sonar:sonar'
+         } else {
+            bat(/"%MVN_HOME%\bin\mvn" sonar:sonar/)
+         }
+      }
+   }
 }
